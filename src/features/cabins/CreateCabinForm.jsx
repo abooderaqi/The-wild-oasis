@@ -11,7 +11,7 @@ import FileInput from "../../ui/FileInput"
 import Textarea from "../../ui/Textarea"
 import FormRow from "../../ui/FormRow"
 
-function CreateCabinForm({ cabinToEdit = {} }) {
+function CreateCabinForm({ cabinToEdit = {}, onCloseModal }) {
   // Custom hooks for create/edit cabins
   const { createCabin, isCreating } = useCreateCabin()
   const { editCabin, isEditing } = useEditCabin()
@@ -41,21 +41,30 @@ function CreateCabinForm({ cabinToEdit = {} }) {
           id: editId,
         },
         {
-          onSuccess: (data) => reset(),
+          onSuccess: (data) => {
+            reset()
+            onCloseModal?.()
+          },
         }
       )
     else
       createCabin(
         { ...data, image: image },
         {
-          onSuccess: (data) => reset(),
+          onSuccess: (data) => {
+            onCloseModal?.()
+            reset()
+          },
         }
       )
   }
   const onError = (errors) => {}
 
   return (
-    <Form onSubmit={handleSubmit(onSubmit, onError)}>
+    <Form
+      onSubmit={handleSubmit(onSubmit, onError)}
+      type={onCloseModal ? "modal" : "regular"}
+    >
       <FormRow label="Cabin name" error={errors?.name?.message}>
         <Input
           type="text"
@@ -101,7 +110,7 @@ function CreateCabinForm({ cabinToEdit = {} }) {
           {...register("discount", {
             required: "This field is required",
             validate: (value) =>
-              value <= getValues().regularPrice ||
+              Number(value) <= Number(getValues().regularPrice) ||
               "Discount should be less than the regular price",
           })}
         />
@@ -134,7 +143,11 @@ function CreateCabinForm({ cabinToEdit = {} }) {
 
       <FormRow>
         {/* type is an HTML attribute! */}
-        <Button variation="secondary" type="reset">
+        <Button
+          onClick={() => onCloseModal?.()}
+          variation="secondary"
+          type="reset"
+        >
           Cancel
         </Button>
         <Button disabled={isWorking}>
