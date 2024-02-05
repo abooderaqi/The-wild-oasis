@@ -8,10 +8,10 @@ import FormRowVertical from "../../ui/FormRowVertical"
 import SpinnerMini from "../../ui/SpinnerMini"
 
 function LoginForm() {
+  const { login, isPending } = useLogin()
+
   const [email, setEmail] = useState("abood@example.com")
   const [password, setPassword] = useState("abood123")
-
-  const { login, isPending } = useLogin()
 
   function handleSubmit(e) {
     e.preventDefault()

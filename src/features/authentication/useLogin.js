@@ -10,7 +10,6 @@ export const useLogin = () => {
 
   const { mutate: login, isPending } = useMutation({
     mutationFn: ({ email, password }) => {
-      console.log(isPending)
       return loginApi({ email, password })
     },
     onSuccess: (user) => {
